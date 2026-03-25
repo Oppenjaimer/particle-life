@@ -27,5 +27,6 @@ int main() {
  - Add sliders for r_min, r_max, friction, force_factor (real-time, no need to pause)
  - Add matrix settings
  - Implement space partitioning and/or GPU rendering
+ - Simulate only visible particles
  - Implement saving and loading settings (seeds)
  */
