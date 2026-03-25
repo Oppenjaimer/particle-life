@@ -1,0 +1,4 @@
+-Iinclude
+-Iexternal/imgui
+-Iexternal/rlimgui
+-std=c++20
