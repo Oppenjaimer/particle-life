@@ -23,11 +23,17 @@ namespace config {
     constexpr float zoom_max = 10.0f;                   ///< Maximum camera zoom level.
 
     // Particles
-    constexpr int particle_count = 200;                 ///< Initial number of particles.
+    constexpr int particle_count = 500;                 ///< Initial number of particles.
     constexpr int particle_count_min = 0;               ///< Minium number of particles.
     constexpr int particle_count_max = 1000000;         ///< Maximum number of particles.
     constexpr int particle_types = 2;                   ///< Initial number of distinct particle types.
     constexpr int particle_types_min = 1;               ///< Minimum number of distinct particle types.
     constexpr int particle_types_max = 8;               ///< Maximum number of distinct particle types.
-    constexpr float particle_radius = 3.0f;             ///< Particle drawing radius.
+    constexpr float particle_radius = 3.0f;             ///< Particle drawing radius (px).
+
+    // Interaction
+    constexpr float r_min = 30.0f;                      ///< Minimum interaction distance between particles (px).
+    constexpr float r_max = 100.0f;                    ///< Maximum interaction distance between particles (px).
+    constexpr float friction = 0.2f;                    ///< Velocity damping factor.
+    constexpr float force_factor = 1000.0f;               ///< Interaction force multiplier.
 }

@@ -17,3 +17,15 @@ int main() {
 
     return 0;
 }
+
+/*
+ TODO:
+ - Use 1D vector for matrix
+ - Create InteractionCtx struct to hold runtime interaction settings and pass less arguments to particle functions
+   This includes passing in interaction settings (currently taken straight from config in particle.cpp)
+ - Implement initial world grid (2500x2500) to spawn particles in
+ - Add sliders for r_min, r_max, friction, force_factor (real-time, no need to pause)
+ - Add matrix settings
+ - Implement space partitioning and/or GPU rendering
+ - Implement saving and loading settings (seeds)
+ */

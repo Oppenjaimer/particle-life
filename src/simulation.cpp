@@ -4,6 +4,7 @@
 
 #include "simulation.hpp"
 #include "theme.hpp"
+#include "utils.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -136,17 +137,15 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
-    for (auto& particle : state.particles) {
-        particle::update(particle);
-    }
+    particle::update(state.particles, state.matrix, state.friction, GetFrameTime());
 }
 
 /**
  * @brief Draw simulation components.
  * @param state Current simulation state.
  */
-static void draw(State& state) {
-    for (auto& particle : state.particles) {
+static void draw(const State& state) {
+    for (const auto& particle : state.particles) {
         particle::draw(particle);
     }
 }
@@ -245,6 +244,19 @@ void sim::reset(State& state) {
 
     // Update active particle types
     state.active_particle_types = state.particle_types;
+
+    // Initialize matrix
+    state.matrix.resize(state.particle_types);
+    for (auto& row : state.matrix) {
+        row.resize(state.particle_types);
+    }
+
+    // Randomize matrix
+    for (int i = 0; i < state.particle_types; i++) {
+        for (int j = 0; j < state.particle_types; j++) {
+            state.matrix[i][j] = utils::get_random_float(-1.0f, 1.0f);
+        }
+    }
 }
 
 void sim::run(State& state) {

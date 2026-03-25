@@ -25,8 +25,14 @@ namespace sim {
         int particle_types = config::particle_types;        ///< Current number of particle types.
         int active_particle_types = config::particle_types; ///< Active number of particle types before reset.
 
+        float r_min = config::r_min;                        ///< Initial minimum interaction distance between particles (px).
+        float r_max = config::r_max;                        ///< Initial maximum interaction distance between particles (px).
+        float friction = config::friction;                  ///< Velocity damping factor.
+        float force_factor = config::force_factor;          ///< Interaction force multiplier.
+
         Camera2D camera;                                    ///< Simulation 2D camera.
         std::vector<particle::Particle> particles;          ///< Vector of particles.
+        std::vector<std::vector<float>> matrix;             ///< Attraction matrix.
     };
 
     /**
