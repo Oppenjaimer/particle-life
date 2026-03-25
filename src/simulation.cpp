@@ -5,6 +5,7 @@
 #include "simulation.hpp"
 #include "theme.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace sim;
@@ -59,6 +60,19 @@ static void zoom(Camera2D& camera) {
 }
 
 /**
+ * @brief Toggle paused state and reset on play if settings were changed.
+ * @param state Simulation state.
+ */
+static void toggle_pause(State& state) {
+    if (state.is_paused) {
+        if (state.particle_count != (int)state.particles.size() || state.particle_types != state.active_particle_types)
+            reset(state);
+    }
+
+    state.is_paused = !state.is_paused;
+}
+
+/**
  * @brief Handle all mouse and keyboard input.
  * @param state Current simulation state.
  */
@@ -75,7 +89,7 @@ static void input(State& state) {
 
     // Toggle pause
     if (IsKeyPressed(KEY_SPACE))
-        state.is_paused = !state.is_paused;
+        toggle_pause(state);
 
     // Toggle settings panel
     if (IsKeyPressed(KEY_S)) {
@@ -121,6 +135,10 @@ static void input(State& state) {
  */
 static void update(State& state) {
     if (state.is_paused) return;
+
+    for (auto& particle : state.particles) {
+        particle::update(particle);
+    }
 }
 
 /**
@@ -128,9 +146,9 @@ static void update(State& state) {
  * @param state Current simulation state.
  */
 static void draw(State& state) {
-    (void)state;
-
-    DrawCircle(0, 0, 10, theme::orange);
+    for (auto& particle : state.particles) {
+        particle::draw(particle);
+    }
 }
 
 /**
@@ -168,7 +186,24 @@ static void gui(State& state) {
     // Play/Pause button
     ImGui::SameLine();
     if (ImGui::Button(state.is_paused ? "Play [SPACE]" : "Pause [SPACE]"))
-        state.is_paused = !state.is_paused;
+        toggle_pause(state);
+
+    ImGui::SeparatorText("Particles");
+    ImGui::BeginDisabled(!state.is_paused);
+
+    // Particle count
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Count"); ImGui::SameLine();
+    if (ImGui::InputInt("##count", &state.particle_count))
+        state.particle_count = std::clamp(state.particle_count, config::particle_count_min, config::particle_count_max);
+
+    // Particle types
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Types"); ImGui::SameLine();
+    if (ImGui::InputInt("##types", &state.particle_types))
+        state.particle_types = std::clamp(state.particle_types, config::particle_types_min, config::particle_types_max);
+
+    ImGui::EndDisabled();
 
     ImGui::End();
 }
@@ -198,6 +233,18 @@ void sim::reset(State& state) {
     state.camera.target = {0.0f, 0.0f};
     state.camera.rotation = 0.0f;
     state.camera.zoom = 1.0f;
+
+    // Reset particles
+    state.particles.clear();
+    state.particles.resize(state.particle_count);
+
+    // Initialize each particle
+    for (auto& particle : state.particles) {
+        particle::init(particle, state.particle_types, state.camera);
+    }
+
+    // Update active particle types
+    state.active_particle_types = state.particle_types;
 }
 
 void sim::run(State& state) {
