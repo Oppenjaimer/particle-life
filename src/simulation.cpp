@@ -251,10 +251,16 @@ static void gui(State& state) {
                     // Color indicators
                     int color_index = (row == 0) ? (col - 1) : (row - 1);
                     Color color = particle::get_color(color_index);
-                    ImU32 bg = ImGui::GetColorU32(theme::to_imvec(color));
+                    ImU32 fg = ImGui::GetColorU32(theme::to_imvec(color));
 
-                    ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bg);
+                    ImVec2 min_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 center = ImVec2(min_pos.x + config::matrix_cell_size * 0.5f, min_pos.y + config::matrix_cell_size * 0.5f);
+
+                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                    float radius = config::matrix_cell_size * config::matrix_circle_factor;
+
                     ImGui::Dummy(ImVec2(config::matrix_cell_size, config::matrix_cell_size));
+                    draw_list->AddCircleFilled(center, radius, fg);
                 } else {
                     // Matrix coefficients
                     float coeff = particle::get_attraction_coefficient(row - 1, col - 1, state.matrix, state.active_particle_types);

@@ -17,6 +17,7 @@ namespace config {
     constexpr float input_float_step = 1.0f;            ///< InputFloat step.
     constexpr float input_float_step_fast = 10.0f;      ///< InputFloat fast step.
     constexpr float matrix_cell_size = 30.0f;           ///< Attraction matrix square cell size.
+    constexpr float matrix_circle_factor = 0.45f;       ///< Factor multiplying the cell size to get the color indicator radius.
     constexpr float matrix_wheel_sensitivity = 0.1f;    ///< Wheel sensitivity for attraction matrix updating.
 
     // Camera
