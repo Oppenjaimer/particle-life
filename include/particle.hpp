@@ -44,9 +44,10 @@ namespace particle {
      * @brief Update all particles in the simulation.
      * @param particles Collection of particles.
      * @param matrix Attraction matrix.
+     * @param particle_types Current number of particle types.
      * @param ctx Interaction context.
      */
-    void update(std::vector<Particle>& particles, const std::vector<std::vector<float>>& matrix, physics::InteractionCtx& ctx, float dt);
+    void update(std::vector<Particle>& particles, const std::vector<float>& matrix, int particle_types, physics::InteractionCtx& ctx, float dt);
 
     /**
      * @brief Draw particle.

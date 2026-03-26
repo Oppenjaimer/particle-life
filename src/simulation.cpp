@@ -137,7 +137,7 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
-    particle::update(state.particles, state.matrix, state.interaction_ctx, GetFrameTime());
+    particle::update(state.particles, state.matrix, state.particle_types, state.interaction_ctx, GetFrameTime());
 }
 
 /**
@@ -268,16 +268,11 @@ void sim::reset(State& state) {
     // Update active particle types
     state.active_particle_types = state.particle_types;
 
-    // Initialize matrix
-    state.matrix.resize(state.particle_types);
-    for (auto& row : state.matrix) {
-        row.resize(state.particle_types);
-    }
-
-    // Randomize matrix
+    // Initialize matrix with random values
+    state.matrix.resize(state.particle_types * state.particle_types);
     for (int i = 0; i < state.particle_types; i++) {
         for (int j = 0; j < state.particle_types; j++) {
-            state.matrix[i][j] = utils::get_random_float(-1.0f, 1.0f);
+            state.matrix[i * state.particle_types + j] = utils::get_random_float(-1.0f, 1.0f);
         }
     }
 }
