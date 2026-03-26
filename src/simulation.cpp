@@ -137,7 +137,7 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
-    particle::update(state.particles, state.matrix, state.friction, GetFrameTime());
+    particle::update(state.particles, state.matrix, state.interaction_ctx.friction, GetFrameTime());
 }
 
 /**
