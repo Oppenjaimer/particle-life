@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 using namespace sim;
 
@@ -161,6 +162,12 @@ static void gui(State& state) {
         state.settings_trigger = false;
     }
 
+    // Settings panel fixed width
+    ImGui::SetNextWindowSizeConstraints(
+        ImVec2(config::settings_width, 0.0f),
+        ImVec2(config::settings_width, FLT_MAX)
+    );
+
     // Settings panel initialization
     ImGui::Begin("Simulation Settings [S]", NULL, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::SetWindowPos(ImVec2(config::settings_pos_x, config::settings_pos_y), ImGuiCond_FirstUseEver);
@@ -191,13 +198,13 @@ static void gui(State& state) {
 
     // Particle count
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Count"); ImGui::SameLine();
+    ImGui::Text("Count             "); ImGui::SameLine();
     if (ImGui::InputInt("##count", &state.particle_count))
         state.particle_count = std::clamp(state.particle_count, config::particle_count_min, config::particle_count_max);
 
     // Particle types
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Types"); ImGui::SameLine();
+    ImGui::Text("Types             "); ImGui::SameLine();
     if (ImGui::InputInt("##types", &state.particle_types))
         state.particle_types = std::clamp(state.particle_types, config::particle_types_min, config::particle_types_max);
 
@@ -207,25 +214,76 @@ static void gui(State& state) {
 
     // Minimum distance
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Minimum distance"); ImGui::SameLine();
+    ImGui::Text("Minimum distance  "); ImGui::SameLine();
     if (ImGui::InputFloat("##r_min", &state.interaction_ctx.r_min, config::input_float_step, config::input_float_step_fast))
         state.interaction_ctx.r_min = std::max(0.0f, state.interaction_ctx.r_min);
 
     // Maximum distance
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Maximum distance"); ImGui::SameLine();
+    ImGui::Text("Maximum distance  "); ImGui::SameLine();
     if (ImGui::InputFloat("##r_max", &state.interaction_ctx.r_max, config::input_float_step, config::input_float_step_fast))
         state.interaction_ctx.r_max = std::max(0.0f, state.interaction_ctx.r_max);
 
     // Friction
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Friction        "); ImGui::SameLine();
+    ImGui::Text("Friction          "); ImGui::SameLine();
     ImGui::SliderFloat("##friction", &state.interaction_ctx.friction, 0.0f, 1.0f);
 
     // Force factor
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("Force factor    "); ImGui::SameLine();
+    ImGui::Text("Force factor      "); ImGui::SameLine();
     ImGui::SliderFloat("##force_factor", &state.interaction_ctx.force_factor, 0.0f, config::force_factor_max);
+
+    ImGui::SeparatorText("Attraction Matrix");
+
+    // Attraction matrix
+    if (ImGui::BeginTable("matrix", state.active_particle_types + 1, ImGuiTableFlags_SizingFixedFit)) {
+        for (int row = 0; row < state.active_particle_types + 1; row++) {
+            ImGui::TableNextRow();
+
+            for (int col = 0; col < state.active_particle_types + 1; col++) {
+                ImGui::TableSetColumnIndex(col);
+
+                if (row == 0 && col == 0) {
+                    // Skip top-left cell
+                    continue;
+                } else if (row == 0 || col == 0) {
+                    // Color indicators
+                    int color_index = (row == 0) ? (col - 1) : (row - 1);
+                    Color color = particle::get_color(color_index);
+                    ImU32 bg = ImGui::GetColorU32(theme::to_imvec(color));
+
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bg);
+                    ImGui::Dummy(ImVec2(config::matrix_cell_size, config::matrix_cell_size));
+                } else {
+                    // Matrix coefficients
+                    float coeff = particle::get_attraction_coefficient(row - 1, col - 1, state.matrix, state.active_particle_types);
+                    Color color = (coeff < 0) ? theme::bright_red : theme::bright_green;
+                    color.a = std::abs(coeff) * 255.0f;
+                    ImU32 bg = ImGui::GetColorU32(theme::to_imvec(color));
+
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bg);
+                    ImGui::Dummy(ImVec2(config::matrix_cell_size, config::matrix_cell_size));
+
+                    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone)) {
+                        // Change attraction coefficient value with mouse wheel
+                        float wheel = ImGui::GetIO().MouseWheel;
+                        if (wheel != 0.0f) {
+                            float new_coeff = std::clamp(coeff + wheel * config::matrix_wheel_sensitivity, -1.0f, 1.0f);
+                            particle::set_attraction_coefficient(row - 1, col - 1, state.matrix, state.active_particle_types, new_coeff);
+                        }
+
+                        // Display attraction coefficient in tooltip
+                        ImGui::BeginTooltip();
+                        ImGui::Text("%.3f", coeff);
+                        ImGui::EndTooltip();
+                    }
+                }
+            }
+        }
+
+        ImGui::EndTable();
+    }
 
     ImGui::End();
 }

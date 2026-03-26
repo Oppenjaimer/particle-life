@@ -54,4 +54,31 @@ namespace particle {
      * @param particle Particle to draw.
      */
     void draw(const Particle& particle);
+
+    /**
+     * @brief Get color corresponding to particle type.
+     * @param type Particle type.
+     * @returns Associated color.
+     */
+    Color get_color(uint8_t type);
+
+    /**
+     * @brief Get attraction coefficient between two particle types.
+     * @param type1 Type of particle one.
+     * @param type2 Type of particle two.
+     * @param matrix Attraction matrix.
+     * @param particle_types Current number of particle types.
+     * @returns Corresponding attraction coefficient.
+     */
+    float get_attraction_coefficient(uint8_t type1, uint8_t type2, const std::vector<float>& matrix, int particle_types);
+
+    /**
+     * @brief Set attraction coefficient between two particle types.
+     * @param type1 Type of particle one.
+     * @param type2 Type of particle two.
+     * @param matrix Attraction matrix.
+     * @param particle_types Current number of particle types.
+     * @param coeff New coefficient (assumed to be valid).
+     */
+    void set_attraction_coefficient(uint8_t type1, uint8_t type2, std::vector<float>& matrix, int particle_types, float coeff);
 }

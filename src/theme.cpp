@@ -1,15 +1,4 @@
-#include "imgui.h"
-
 #include "theme.hpp"
-
-/**
- * @brief Convert Color (0-255) to ImVec4 (0.0f-1.0f).
- * @param c Raylib color.
- * @returns ImVec4 color.
- */
-static ImVec4 to_imvec(const Color& c) {
-    return ImVec4(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, c.a / 255.0f);
-}
 
 void theme::apply() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -78,4 +67,8 @@ void theme::apply() {
     style.ScrollbarRounding = 2.0f;
     style.GrabRounding = 2.0f;
     style.TabRounding = 2.0f;
+}
+
+ImVec4 theme::to_imvec(const Color& c) {
+    return ImVec4(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, c.a / 255.0f);
 }

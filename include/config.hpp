@@ -13,8 +13,11 @@ namespace config {
     constexpr int settings_collapse = false;            ///< Default state of the settings panel.
     constexpr int settings_pos_x = 10;                  ///< Default X position of the settings panel.
     constexpr int settings_pos_y = 10;                  ///< Default Y position of the settings panel.
+    constexpr int settings_width = 360;                 ///< Default width of the settings panel.
     constexpr float input_float_step = 1.0f;            ///< InputFloat step.
     constexpr float input_float_step_fast = 10.0f;      ///< InputFloat fast step.
+    constexpr float matrix_cell_size = 30.0f;           ///< Attraction matrix square cell size.
+    constexpr float matrix_wheel_sensitivity = 0.1f;    ///< Wheel sensitivity for attraction matrix updating.
 
     // Camera
     constexpr float pan_sensitivity_mouse = 1.0f;       ///< Drag sensitivity for mouse panning.

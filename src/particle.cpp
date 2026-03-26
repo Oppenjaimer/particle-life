@@ -3,28 +3,6 @@
 
 #include "raymath.h" // Include after raylib.h
 
-using namespace particle;
-
-/**
- * @brief Get color corresponding to particle type.
- * @param type Particle type.
- * @returns Associated color.
- */
-static Color get_color(uint8_t type) {
-    return colors[type];
-}
-
-/**
- * @brief Get attraction coefficient between two particle types.
- * @param type1 Type of particle one.
- * @param type2 Type of particle two.
- * @param matrix Attraction matrix.
- * @param particle_types Current number of particle types.
- */
-static float get_attraction_coefficient(uint8_t type1, uint8_t type2, const std::vector<float>& matrix, int particle_types) {
-    return matrix[type1 * particle_types + type2];
-}
-
 void particle::init(Particle& particle, int particle_types, Camera2D& camera) {
     // Assign random type and position
     particle.type = utils::get_random_int(config::particle_types_min, particle_types) - 1;
@@ -71,4 +49,16 @@ void particle::update(std::vector<Particle> &particles, const std::vector<float>
 
 void particle::draw(const Particle& particle) {
     DrawCircleV(particle.position, config::particle_radius, get_color(particle.type));
+}
+
+Color particle::get_color(uint8_t type) {
+    return colors[type];
+}
+
+float particle::get_attraction_coefficient(uint8_t type1, uint8_t type2, const std::vector<float>& matrix, int particle_types) {
+    return matrix[type1 * particle_types + type2];
+}
+
+void particle::set_attraction_coefficient(uint8_t type1, uint8_t type2, std::vector<float>& matrix, int particle_types, float coeff) {
+    matrix[type1 * particle_types + type2] = coeff;
 }

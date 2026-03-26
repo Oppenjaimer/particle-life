@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imgui.h"
 #include "raylib.h"
 
 /**
@@ -45,4 +46,11 @@ namespace theme {
      * @brief Apply theme to ImGui style context.
      */
     void apply();
+
+    /**
+     * @brief Convert Color (0-255) to ImVec4 (0.0f-1.0f).
+     * @param c Raylib color.
+     * @returns ImVec4 color.
+     */
+    ImVec4 to_imvec(const Color& c);
 }
