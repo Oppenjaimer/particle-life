@@ -20,7 +20,6 @@ int main() {
 
 /*
  TODO:
- - Implement initial world grid (2500x2500) to spawn particles in
  - Add matrix settings
  - Implement space partitioning and/or GPU rendering
  - Simulate only visible particles

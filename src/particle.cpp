@@ -46,16 +46,16 @@ void particle::update(std::vector<Particle> &particles, const std::vector<float>
         for (const auto& other : particles) {
             if (&particle == &other) continue;
 
-            Vector2 diff = Vector2Subtract(particle.position, other.position);
+            Vector2 diff = particle.position - other.position;
             float r = Vector2Length(diff);
 
             if (r > 0.0f && r < ctx.r_max) {
                 float a = get_attraction_coefficient(particle.type, other.type, matrix, particle_types);
                 float force = physics::calculate_force(a, r, ctx) * ctx.force_factor;
                 Vector2 direction = Vector2Normalize(diff);
-                Vector2 force_vector = Vector2Scale(direction, -force);
+                Vector2 force_vector = direction * (-force);
 
-                total_force = Vector2Add(total_force, force_vector);
+                total_force += force_vector;
             }
         }
 

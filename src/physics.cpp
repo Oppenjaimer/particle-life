@@ -3,13 +3,11 @@
 #include "raymath.h" // Include after raylib.h
 
 void physics::integrate_verlet(Vector2& pos, Vector2& prev_pos, Vector2& acc, float friction, float dt) {
-    Vector2 velocity = Vector2Subtract(pos, prev_pos);
-    Vector2 velocity_damped = Vector2Scale(velocity, 1.0f - friction);
-    Vector2 acceleration = Vector2Scale(acc, dt * dt);
+    Vector2 velocity = (pos - prev_pos) * (1.0f - friction);
+    Vector2 acceleration = acc * dt * dt;
 
     prev_pos = pos;
-    pos = Vector2Add(pos, velocity_damped);
-    pos = Vector2Add(pos, acceleration);
+    pos += velocity + acceleration;
     acc = {0.0f, 0.0f};
 }
 
