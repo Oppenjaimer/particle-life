@@ -13,6 +13,8 @@ namespace config {
     constexpr int settings_collapse = false;            ///< Default state of the settings panel.
     constexpr int settings_pos_x = 10;                  ///< Default X position of the settings panel.
     constexpr int settings_pos_y = 10;                  ///< Default Y position of the settings panel.
+    constexpr float input_float_step = 1.0f;            ///< InputFloat step.
+    constexpr float input_float_step_fast = 10.0f;      ///< InputFloat fast step.
 
     // Camera
     constexpr float pan_sensitivity_mouse = 1.0f;       ///< Drag sensitivity for mouse panning.
@@ -33,7 +35,8 @@ namespace config {
 
     // Interaction
     constexpr float r_min = 30.0f;                      ///< Minimum interaction distance between particles (px).
-    constexpr float r_max = 100.0f;                    ///< Maximum interaction distance between particles (px).
+    constexpr float r_max = 100.0f;                     ///< Maximum interaction distance between particles (px).
     constexpr float friction = 0.2f;                    ///< Velocity damping factor.
-    constexpr float force_factor = 1000.0f;               ///< Interaction force multiplier.
+    constexpr float force_factor = 1000.0f;             ///< Interaction force multiplier.
+    constexpr float force_factor_max = 10000.0f;        ///< Interaction force multiplier.
 }

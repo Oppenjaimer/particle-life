@@ -22,7 +22,6 @@ int main() {
  TODO:
  - Use 1D vector for matrix
  - Implement initial world grid (2500x2500) to spawn particles in
- - Add sliders for r_min, r_max, friction, force_factor (real-time, no need to pause)
  - Add matrix settings
  - Implement space partitioning and/or GPU rendering
  - Simulate only visible particles

@@ -170,7 +170,6 @@ static void gui(State& state) {
     // FPS counter
     ImGui::Text("FPS: %d", GetFPS());
 
-    // Control buttons
     ImGui::SeparatorText("Controls");
 
     // Quit button
@@ -203,6 +202,30 @@ static void gui(State& state) {
         state.particle_types = std::clamp(state.particle_types, config::particle_types_min, config::particle_types_max);
 
     ImGui::EndDisabled();
+
+    ImGui::SeparatorText("Interaction");
+
+    // Minimum distance
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Minimum distance"); ImGui::SameLine();
+    if (ImGui::InputFloat("##r_min", &state.interaction_ctx.r_min, config::input_float_step, config::input_float_step_fast))
+        state.interaction_ctx.r_min = std::max(0.0f, state.interaction_ctx.r_min);
+
+    // Maximum distance
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Maximum distance"); ImGui::SameLine();
+    if (ImGui::InputFloat("##r_max", &state.interaction_ctx.r_max, config::input_float_step, config::input_float_step_fast))
+        state.interaction_ctx.r_max = std::max(0.0f, state.interaction_ctx.r_max);
+
+    // Friction
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Friction        "); ImGui::SameLine();
+    ImGui::SliderFloat("##friction", &state.interaction_ctx.friction, 0.0f, 1.0f);
+
+    // Force factor
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Force factor    "); ImGui::SameLine();
+    ImGui::SliderFloat("##force_factor", &state.interaction_ctx.force_factor, 0.0f, config::force_factor_max);
 
     ImGui::End();
 }
