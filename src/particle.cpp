@@ -1,5 +1,4 @@
 #include "particle.hpp"
-#include "physics.hpp"
 #include "utils.hpp"
 
 #include "raymath.h" // Include after raylib.h
@@ -28,7 +27,7 @@ void particle::init(Particle& particle, int particle_types, Camera2D& camera) {
     particle.acceleration = {0.0f, 0.0f};
 }
 
-void particle::update(std::vector<Particle> &particles, const std::vector<std::vector<float>>& matrix, float friction, float dt) {
+void particle::update(std::vector<Particle> &particles, const std::vector<std::vector<float>>& matrix, physics::InteractionCtx& ctx, float dt) {
     // First pass: calculate all forces based on current positions
     for (auto& particle : particles) {
         Vector2 total_force = {0.0f, 0.0f};
@@ -39,9 +38,9 @@ void particle::update(std::vector<Particle> &particles, const std::vector<std::v
             Vector2 diff = Vector2Subtract(particle.position, other.position);
             float r = Vector2Length(diff);
 
-            if (r > 0.0f && r < config::r_max) {
+            if (r > 0.0f && r < ctx.r_max) {
                 float a = matrix[particle.type][other.type];
-                float force = physics::calculate_force(a, r) * config::force_factor;
+                float force = physics::calculate_force(a, r, ctx) * ctx.force_factor;
                 Vector2 direction = Vector2Normalize(diff);
                 Vector2 force_vector = Vector2Scale(direction, -force);
 
@@ -55,7 +54,7 @@ void particle::update(std::vector<Particle> &particles, const std::vector<std::v
 
     // Second pass: integrate over all particles
     for (auto& particle : particles) {
-        physics::integrate_verlet(particle.position, particle.previous_position, particle.acceleration, friction, dt);
+        physics::integrate_verlet(particle.position, particle.previous_position, particle.acceleration, ctx.friction, dt);
     }
 }
 

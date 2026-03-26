@@ -30,7 +30,7 @@ namespace sim {
         Camera2D camera;                                    ///< Simulation 2D camera.
         std::vector<particle::Particle> particles;          ///< Vector of particles.
         std::vector<std::vector<float>> matrix;             ///< Attraction matrix.
-        physics::InteractionCtx interaction_ctx;           ///< Interaction context.
+        physics::InteractionCtx interaction_ctx;            ///< Interaction context.
     };
 
     /**

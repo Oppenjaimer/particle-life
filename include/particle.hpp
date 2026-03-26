@@ -3,6 +3,7 @@
 #include "raylib.h"
 
 #include "config.hpp"
+#include "physics.hpp"
 #include "theme.hpp"
 
 #include <array>
@@ -43,10 +44,9 @@ namespace particle {
      * @brief Update all particles in the simulation.
      * @param particles Collection of particles.
      * @param matrix Attraction matrix.
-     * @param friction Velocity damping factor.
-     * @param dt Integration time step
+     * @param ctx Interaction context.
      */
-    void update(std::vector<Particle>& particles, const std::vector<std::vector<float>>& matrix, float friction, float dt);
+    void update(std::vector<Particle>& particles, const std::vector<std::vector<float>>& matrix, physics::InteractionCtx& ctx, float dt);
 
     /**
      * @brief Draw particle.

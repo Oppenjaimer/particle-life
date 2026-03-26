@@ -13,13 +13,13 @@ void physics::integrate_verlet(Vector2& pos, Vector2& prev_pos, Vector2& acc, fl
     acc = {0.0f, 0.0f};
 }
 
-float physics::calculate_force(float a, float r) {
-    if (r < config::r_min) {
+float physics::calculate_force(float a, float r, InteractionCtx& ctx) {
+    if (r < ctx.r_min) {
         // Global repulsive force
-        return r / config::r_min - 1.0f;
-    } else if (r < config::r_max) {
+        return r / ctx.r_min - 1.0f;
+    } else if (r < ctx.r_max) {
         // Normal attractive/repulsive force
-        return a * (1.0f - std::abs(2.0f * r - config::r_max - config::r_min) / (config::r_max - config::r_min));
+        return a * (1.0f - std::abs(2.0f * r - ctx.r_max - ctx.r_min) / (ctx.r_max - ctx.r_min));
     } else {
         // No force
         return 0.0f;

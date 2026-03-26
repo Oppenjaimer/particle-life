@@ -32,7 +32,8 @@ namespace physics {
      * @brief Calculate interaction force between two particles.
      * @param a Attraction coefficient.
      * @param r Distance between the particles (px).
+     * @param ctx Interaction context.
      * @returns Force magnitude.
      */
-    float calculate_force(float a, float r);
+    float calculate_force(float a, float r, InteractionCtx& ctx);
 }
