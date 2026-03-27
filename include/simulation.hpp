@@ -22,10 +22,11 @@ namespace sim {
         bool settings_collapse = config::settings_collapse; ///< Whether the settings panel is collapsed.
         bool settings_trigger = false;                      ///< Whether a settings panel collapse was triggered.
 
+        bool world_boundary = config::world_boundary;        ///< Whether to outline the world boundary.
+
         int particle_count = config::particle_count;        ///< Current number of particles.
         int particle_types = config::particle_types;        ///< Current number of particle types.
         int active_particle_types = config::particle_types; ///< Active number of particle types before reset.
-
 
         Camera2D camera;                                    ///< Simulation 2D camera.
         std::vector<particle::Particle> particles;          ///< Vector of particles.

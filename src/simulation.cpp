@@ -138,6 +138,7 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
+    // Update particles
     particle::update(state.particles, state.matrix, state.particle_types, state.interaction_ctx, GetFrameTime());
 }
 
@@ -146,6 +147,11 @@ static void update(State& state) {
  * @param state Current simulation state.
  */
 static void draw(const State& state) {
+    // Draw world boundary
+    if (state.world_boundary)
+        DrawRectangleLines(0, 0, config::world_width, config::world_height, theme::bg4);
+
+    // Draw particles
     for (const auto& particle : state.particles) {
         particle::draw(particle);
     }
@@ -174,8 +180,15 @@ static void gui(State& state) {
     ImGui::SetWindowCollapsed(state.settings_collapse, ImGuiCond_FirstUseEver);
     state.settings_collapse = ImGui::IsWindowCollapsed();
 
+    ImGui::SeparatorText("General");
+
     // FPS counter
     ImGui::Text("FPS: %d", GetFPS());
+
+    // World boundary checkbox
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("World boundary"); ImGui::SameLine();
+    ImGui::Checkbox("##boundary", &state.world_boundary);
 
     ImGui::SeparatorText("Controls");
 
@@ -298,7 +311,7 @@ void sim::init(State& state) {
     // Initialize raylib
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
-    InitWindow(config::width, config::height, "Simulation");
+    InitWindow(config::screen_width, config::screen_height, "Particle Life");
     SetTargetFPS(config::fps);
 
     // Initialize ImGui
@@ -316,7 +329,7 @@ void sim::init(State& state) {
 void sim::reset(State& state) {
     // Reset camera
     state.camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
-    state.camera.target = {0.0f, 0.0f};
+    state.camera.target = {config::world_width / 2.0f, config::world_height / 2.0f};
     state.camera.rotation = 0.0f;
     state.camera.zoom = 1.0f;
 
@@ -326,7 +339,7 @@ void sim::reset(State& state) {
 
     // Initialize each particle
     for (auto& particle : state.particles) {
-        particle::init(particle, state.particle_types, state.camera);
+        particle::init(particle, state.particle_types);
     }
 
     // Update active particle types

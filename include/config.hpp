@@ -4,10 +4,15 @@
  * @brief Global configuration constants.
  */
 namespace config {
-    // Window
-    constexpr int width = 1280;                         ///< Initial window width (px).
-    constexpr int height = 720;                         ///< Initial window height (px).
+    // Screen
+    constexpr int screen_width = 1280;                  ///< Initial screen width (px).
+    constexpr int screen_height = 720;                  ///< Initial screen height (px).
     constexpr int fps = 60;                             ///< Target frames per second.
+
+    // World
+    constexpr int world_width = 3000;                   ///< Width of the simulation world (px).
+    constexpr int world_height = 3000;                  ///< Height of the simulation world (px).
+    constexpr bool world_boundary = false;              ///< Whether to outline the world boundary.
 
     // Settings panel
     constexpr int settings_collapse = false;            ///< Default state of the settings panel.
@@ -29,7 +34,7 @@ namespace config {
     constexpr float zoom_max = 10.0f;                   ///< Maximum camera zoom level.
 
     // Particles
-    constexpr int particle_count = 500;                 ///< Initial number of particles.
+    constexpr int particle_count = 700;                 ///< Initial number of particles.
     constexpr int particle_count_min = 0;               ///< Minium number of particles.
     constexpr int particle_count_max = 1000000;         ///< Maximum number of particles.
     constexpr int particle_types = 2;                   ///< Initial number of distinct particle types.
@@ -39,7 +44,7 @@ namespace config {
 
     // Interaction
     constexpr float r_min = 30.0f;                      ///< Minimum interaction distance between particles (px).
-    constexpr float r_max = 100.0f;                     ///< Maximum interaction distance between particles (px).
+    constexpr float r_max = 200.0f;                     ///< Maximum interaction distance between particles (px).
     constexpr float friction = 0.2f;                    ///< Velocity damping factor.
     constexpr float force_factor = 1000.0f;             ///< Interaction force multiplier.
     constexpr float force_factor_max = 10000.0f;        ///< Interaction force multiplier.

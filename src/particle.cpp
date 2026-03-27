@@ -3,13 +3,13 @@
 
 #include "raymath.h" // Include after raylib.h
 
-void particle::init(Particle& particle, int particle_types, Camera2D& camera) {
+void particle::init(Particle& particle, int particle_types) {
     // Assign random type and position
     particle.type = utils::get_random_int(config::particle_types_min, particle_types) - 1;
-    particle.position = GetScreenToWorld2D({
-        utils::get_random_float(0.0f, GetScreenWidth()),
-        utils::get_random_float(0.0f, GetScreenHeight())
-    }, camera);
+    particle.position = {
+        utils::get_random_float(0.0f, config::world_width),
+        utils::get_random_float(0.0f, config::world_height)
+    };
 
     // No acceleration or initial velocity
     particle.previous_position = particle.position;

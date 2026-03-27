@@ -36,9 +36,8 @@ namespace particle {
      * @brief Initialize particle state.
      * @param particle Particle to initialize.
      * @param particle_types Current number of particle types.
-     * @param camera Simulation camera.
      */
-    void init(Particle& particle, int particle_types, Camera2D& camera);
+    void init(Particle& particle, int particle_types);
 
     /**
      * @brief Update all particles in the simulation.
