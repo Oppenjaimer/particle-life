@@ -139,7 +139,7 @@ static void update(State& state) {
     if (state.is_paused) return;
 
     // Update particles
-    particle::update(state.particles, state.matrix, state.particle_types, state.interaction_ctx, GetFrameTime());
+    particle::update(state.particles, state.matrix, state.particle_types, GetFrameTime(), state.interaction_ctx);
 }
 
 /**
@@ -180,15 +180,23 @@ static void gui(State& state) {
     ImGui::SetWindowCollapsed(state.settings_collapse, ImGuiCond_FirstUseEver);
     state.settings_collapse = ImGui::IsWindowCollapsed();
 
-    ImGui::SeparatorText("General");
-
     // FPS counter
     ImGui::Text("FPS: %d", GetFPS());
 
-    // World boundary checkbox
+    ImGui::SeparatorText("World");
+
+    // Show world boundary
     ImGui::AlignTextToFramePadding();
-    ImGui::Text("World boundary"); ImGui::SameLine();
-    ImGui::Checkbox("##boundary", &state.world_boundary);
+    ImGui::Text("World boundary                               "); ImGui::SameLine();
+    ImGui::Checkbox("##show_boundary", &state.world_boundary);
+
+    // World boundary type
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Boundary type     "); ImGui::SameLine();
+    const char* boundary_names[] = {"Bounce", "Periodic", "Open"};
+    int boundary_type = state.interaction_ctx.boundary_type;
+    if (ImGui::Combo("##boundary_type", &boundary_type, boundary_names, IM_ARRAYSIZE(boundary_names)))
+        state.interaction_ctx.boundary_type = static_cast<physics::BoundaryType>(boundary_type);
 
     ImGui::SeparatorText("Controls");
 

@@ -16,7 +16,7 @@ void particle::init(Particle& particle, int particle_types) {
     particle.acceleration = {0.0f, 0.0f};
 }
 
-void particle::update(std::vector<Particle> &particles, const std::vector<float>& matrix, int particle_types, physics::InteractionCtx& ctx, float dt) {
+void particle::update(std::vector<Particle> &particles, const std::vector<float>& matrix, int particle_types, float dt, physics::InteractionCtx& ctx) {
     // First pass: calculate all forces based on current positions
     for (auto& particle : particles) {
         Vector2 total_force = {0.0f, 0.0f};
@@ -25,6 +25,16 @@ void particle::update(std::vector<Particle> &particles, const std::vector<float>
             if (&particle == &other) continue;
 
             Vector2 diff = particle.position - other.position;
+
+            // Wrap distance if periodic boundary conditions apply
+            if (ctx.boundary_type == physics::BoundaryType::Periodic) {
+                if (diff.x > config::world_width * 0.5f) diff.x -= config::world_width;
+                else if (diff.x < -config::world_width * 0.5f) diff.x += config::world_width;
+
+                if (diff.y > config::world_height * 0.5f) diff.y -= config::world_height;
+                else if (diff.y < -config::world_height * 0.5f) diff.y += config::world_height;
+            }
+
             float r = Vector2Length(diff);
 
             if (r > 0.0f && r < ctx.r_max) {
@@ -43,7 +53,7 @@ void particle::update(std::vector<Particle> &particles, const std::vector<float>
 
     // Second pass: integrate over all particles
     for (auto& particle : particles) {
-        physics::integrate_verlet(particle.position, particle.previous_position, particle.acceleration, ctx.friction, dt);
+        physics::integrate_verlet(particle.position, particle.previous_position, particle.acceleration, dt, ctx);
     }
 }
 
