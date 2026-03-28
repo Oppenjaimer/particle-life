@@ -75,6 +75,17 @@ static void toggle_pause(State& state) {
 }
 
 /**
+ * @brief Center the camera within the world.
+ * @param camera Camera to center.
+ */
+static void center_camera(Camera2D& camera) {
+    camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
+    camera.target = {config::world_width / 2.0f, config::world_height / 2.0f};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+}
+
+/**
  * @brief Handle all mouse and keyboard input.
  * @param state Current simulation state.
  */
@@ -92,6 +103,10 @@ static void input(State& state) {
     // Toggle pause
     if (IsKeyPressed(KEY_SPACE))
         toggle_pause(state);
+
+    // Center camera
+    if (IsKeyPressed(KEY_C))
+        center_camera(state.camera);
 
     // Toggle settings panel
     if (IsKeyPressed(KEY_S)) {
@@ -222,6 +237,11 @@ static void gui(State& state) {
     if (ImGui::Button(state.is_paused ? "Play [SPACE]" : "Pause [SPACE]"))
         toggle_pause(state);
 
+    // Center camera button
+    // ImGui::SameLine();
+    if (ImGui::Button("Center camera [C]"))
+        center_camera(state.camera);
+
     ImGui::SeparatorText("Particles");
     ImGui::BeginDisabled(!state.is_paused);
 
@@ -338,17 +358,12 @@ void sim::init(State& state) {
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
 
-    // Initialize state
+    // Initialize camera and state
+    center_camera(state.camera);
     reset(state);
 }
 
 void sim::reset(State& state) {
-    // Reset camera
-    state.camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
-    state.camera.target = {config::world_width / 2.0f, config::world_height / 2.0f};
-    state.camera.rotation = 0.0f;
-    state.camera.zoom = 1.0f;
-
     // Reset particles
     state.particles.clear();
     state.particles.resize(state.particle_count);

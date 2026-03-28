@@ -36,7 +36,7 @@ namespace config {
     // Particles
     constexpr int particle_count = 700;                 ///< Initial number of particles.
     constexpr int particle_count_min = 0;               ///< Minium number of particles.
-    constexpr int particle_count_max = 1000000;         ///< Maximum number of particles.
+    constexpr int particle_count_max = 100000;          ///< Maximum number of particles.
     constexpr int particle_types = 2;                   ///< Initial number of distinct particle types.
     constexpr int particle_types_min = 1;               ///< Minimum number of distinct particle types.
     constexpr int particle_types_max = 8;               ///< Maximum number of distinct particle types.
