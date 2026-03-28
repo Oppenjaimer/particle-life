@@ -151,9 +151,17 @@ static void draw(const State& state) {
     if (state.world_boundary)
         DrawRectangleLines(0, 0, config::world_width, config::world_height, theme::bg4);
 
-    // Draw particles
+    Vector2 screen_start = GetScreenToWorld2D({0, 0}, state.camera);
+    Vector2 screen_end = GetScreenToWorld2D({(float)GetScreenWidth(), (float)GetScreenHeight()}, state.camera);
+
+    // Draw visible particles
     for (const auto& particle : state.particles) {
-        particle::draw(particle);
+        if (
+            particle.position.x >= screen_start.x &&
+            particle.position.y >= screen_start.y &&
+            particle.position.x <= screen_end.x &&
+            particle.position.y <= screen_end.y
+        ) particle::draw(particle);
     }
 }
 
