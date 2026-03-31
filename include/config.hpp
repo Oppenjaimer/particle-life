@@ -4,10 +4,14 @@
  * @brief Global configuration constants.
  */
 namespace config {
+    // Application
+    constexpr int fps = 60;                             ///< Target frames per second.
+    constexpr const char* title = "Particle Life";      ///< Application window title.
+    constexpr const char* resource_dir = "resources";   ///< Raylib resource directory name.
+
     // Screen
     constexpr int screen_width = 1280;                  ///< Initial screen width (px).
     constexpr int screen_height = 720;                  ///< Initial screen height (px).
-    constexpr int fps = 60;                             ///< Target frames per second.
 
     // World
     constexpr int world_width = 3000;                   ///< Width of the simulation world (px).

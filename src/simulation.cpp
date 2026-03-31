@@ -347,8 +347,17 @@ void sim::init(State& state) {
     // Initialize raylib
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
-    InitWindow(config::screen_width, config::screen_height, "Particle Life");
+    InitWindow(config::screen_width, config::screen_height, config::title);
     SetTargetFPS(config::fps);
+
+    // Set resources directory and app icon
+    bool found = utils::set_resource_dir(config::resource_dir);
+    if (found) {
+        Image icon = LoadImage("icon.png");
+        SetWindowIcon(icon);
+    } else {
+        TraceLog(LOG_WARNING, "Unable to find '%s' directory", config::resource_dir);
+    }
 
     // Initialize ImGui
     rlImGuiSetup(true);

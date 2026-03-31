@@ -19,4 +19,11 @@ namespace utils {
      * @returns Random integer.
      */
     int get_random_int(int min, int max);
+
+    /**
+     * @brief Set raylib resource directory.
+     * @param path Directory path.
+     * @returns Whether the directory was found.
+     */
+    bool set_resource_dir(const char* path);
 }
