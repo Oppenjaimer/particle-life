@@ -52,4 +52,7 @@ namespace config {
     constexpr float friction = 0.2f;                    ///< Velocity damping factor.
     constexpr float force_factor = 1000.0f;             ///< Interaction force multiplier.
     constexpr float force_factor_max = 10000.0f;        ///< Interaction force multiplier.
+
+    // Shaders
+    constexpr int compute_groups = 256;                 ///< Number of workgroups in the compute shader.
 }

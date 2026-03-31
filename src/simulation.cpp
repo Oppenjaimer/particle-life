@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "rlImGui.h"
 #include "raymath.h"
+#include "rlgl.h"
 
 #include "simulation.hpp"
 #include "theme.hpp"
@@ -153,8 +154,52 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
-    // Update particles
-    particle::update(state.particles, state.matrix, state.particle_types, GetFrameTime(), state.interaction_ctx);
+    rlUpdateShaderBuffer(state.ssbo_matrix, state.matrix.data(), state.matrix.size() * sizeof(float), 0);
+    rlEnableShader(state.compute_program);
+
+    // Bind SSBOs to layout locations
+    rlBindShaderBuffer(state.ssbo_particles, 0);
+    rlBindShaderBuffer(state.ssbo_matrix, 1);
+
+    // Send uniforms
+    int world_width_loc = rlGetLocationUniform(state.compute_program, "world_width");
+    rlSetUniform(world_width_loc, &config::world_width, RL_SHADER_UNIFORM_INT, 1);
+
+    int world_height_loc = rlGetLocationUniform(state.compute_program, "world_height");
+    rlSetUniform(world_height_loc, &config::world_height, RL_SHADER_UNIFORM_INT, 1);
+
+    int count_loc = rlGetLocationUniform(state.compute_program, "particle_count");
+    rlSetUniform(count_loc, &state.particle_count, RL_SHADER_UNIFORM_INT, 1);
+
+    int types_loc = rlGetLocationUniform(state.compute_program, "particle_types");
+    rlSetUniform(types_loc, &state.particle_types, RL_SHADER_UNIFORM_INT, 1);
+
+    float dt = GetFrameTime();
+    int dt_loc = rlGetLocationUniform(state.compute_program, "dt");
+    rlSetUniform(dt_loc, &dt, RL_SHADER_UNIFORM_FLOAT, 1);
+
+    int r_min_loc = rlGetLocationUniform(state.compute_program, "r_min");
+    rlSetUniform(r_min_loc, &state.interaction_ctx.r_min, RL_SHADER_UNIFORM_FLOAT, 1);
+
+    int r_max_loc = rlGetLocationUniform(state.compute_program, "r_max");
+    rlSetUniform(r_max_loc, &state.interaction_ctx.r_max, RL_SHADER_UNIFORM_FLOAT, 1);
+
+    int friction_loc = rlGetLocationUniform(state.compute_program, "friction");
+    rlSetUniform(friction_loc, &state.interaction_ctx.friction, RL_SHADER_UNIFORM_FLOAT, 1);
+
+    int force_factor_loc = rlGetLocationUniform(state.compute_program, "force_factor");
+    rlSetUniform(force_factor_loc, &state.interaction_ctx.force_factor, RL_SHADER_UNIFORM_FLOAT, 1);
+
+    int boundary = static_cast<int>(state.interaction_ctx.boundary_type);
+    int boundary_type_loc = rlGetLocationUniform(state.compute_program, "boundary_type");
+    rlSetUniform(boundary_type_loc, &boundary, RL_SHADER_UNIFORM_INT, 1);
+
+    // Dispatch shader
+    int num_groups = (state.particle_count + config::compute_groups - 1) / config::compute_groups;
+    rlComputeShaderDispatch(num_groups, 1, 1);
+
+    rlDisableShader();
+    rlReadShaderBuffer(state.ssbo_particles, state.particles.data(), state.particles.size() * sizeof(particle::Particle), 0);
 }
 
 /**
@@ -367,6 +412,12 @@ void sim::init(State& state) {
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
 
+    // Load compute shader
+    char* compute_code = LoadFileText("particle_update.comp");
+    unsigned int compute_shader = rlLoadShader(compute_code, RL_COMPUTE_SHADER);
+    state.compute_program = rlLoadShaderProgramCompute(compute_shader);
+    UnloadFileText(compute_code);
+
     // Initialize camera and state
     center_camera(state.camera);
     reset(state);
@@ -392,6 +443,23 @@ void sim::reset(State& state) {
             state.matrix[i * state.particle_types + j] = utils::get_random_float(-1.0f, 1.0f);
         }
     }
+
+    // Clean up old SSBOs
+    if (state.ssbo_particles != 0) rlUnloadShaderBuffer(state.ssbo_particles);
+    if (state.ssbo_matrix != 0) rlUnloadShaderBuffer(state.ssbo_matrix);
+
+    // Create SSBOs
+    state.ssbo_particles = rlLoadShaderBuffer(
+        state.particles.size() * sizeof(particle::Particle),
+        state.particles.data(),
+        RL_DYNAMIC_COPY
+    );
+
+    state.ssbo_matrix = rlLoadShaderBuffer(
+        state.matrix.size() * sizeof(float),
+        state.matrix.data(),
+        RL_DYNAMIC_COPY
+    );
 }
 
 void sim::run(State& state) {
@@ -418,8 +486,9 @@ void sim::run(State& state) {
 }
 
 void sim::cleanup(State& state) {
-    (void)state;
-
+    rlUnloadShaderProgram(state.compute_program);
+    rlUnloadShaderBuffer(state.ssbo_particles);
+    rlUnloadShaderBuffer(state.ssbo_matrix);
     rlImGuiShutdown();
     CloseWindow();
 }

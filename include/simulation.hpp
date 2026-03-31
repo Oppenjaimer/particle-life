@@ -30,8 +30,12 @@ namespace sim {
 
         Camera2D camera;                                    ///< Simulation 2D camera.
         std::vector<particle::Particle> particles;          ///< Vector of particles.
-        std::vector<float> matrix;                           ///< Attraction matrix.
+        std::vector<float> matrix;                          ///< Attraction matrix.
         physics::InteractionCtx interaction_ctx;            ///< Interaction context.
+
+        unsigned int compute_program;                       ///< Compute shader program.
+        unsigned int ssbo_particles;                        ///< Particles SSBO.
+        unsigned int ssbo_matrix;                           ///< Attraction matrix SSBO.
     };
 
     /**

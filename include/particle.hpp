@@ -17,11 +17,12 @@ namespace particle {
     /**
      * @brief Simulation particle.
      */
-    struct Particle {
-        uint8_t type;               ///< Particle type (zero-indexed).
+    struct alignas(16) Particle {
         Vector2 position;           ///< Current world position (px).
         Vector2 previous_position;  ///< Previous world position (px).
         Vector2 acceleration;       ///< Current acceleration.
+        uint32_t type;              ///< Particle type (zero-indexed).
+        uint32_t padding;           ///< Padding to reach 32 bytes (compute shader).
     };
 
     /**

@@ -20,9 +20,7 @@ int main() {
 
 /*
  TODO:
- - Make app logo
  - Implement space partitioning and/or GPU rendering
- - Simulate only visible particles
  - Implement saving and loading settings (seeds)
  - Add brush to create custom particle distributions
  - Add multiple themes

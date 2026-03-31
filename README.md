@@ -4,7 +4,7 @@ A Raylib implementation of Particle Life in C++. The codebase is written in a mi
 
 ## Libraries
 
-* [Raylib](https://www.raylib.com/): Installed via package manager ([Arch](https://archlinux.org/packages/extra/x86_64/raylib/)).
+* [Raylib](https://www.raylib.com/): Compiled from source for OpenGL 4.3 support.
 * [Dear ImGui](https://github.com/ocornut/imgui): Cloned to `external/imgui`.
 * [rlImGui](https://github.com/raylib-extras/rlImGui): Cloned to `external/rlimgui`.
 
