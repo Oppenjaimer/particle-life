@@ -3,7 +3,6 @@
 #include "raylib.h"
 
 #include "config.hpp"
-#include "physics.hpp"
 #include "theme.hpp"
 
 #include <array>
@@ -17,12 +16,11 @@ namespace particle {
     /**
      * @brief Simulation particle.
      */
-    struct alignas(16) Particle {
+    struct alignas(8) Particle {
         Vector2 position;           ///< Current world position (px).
         Vector2 previous_position;  ///< Previous world position (px).
-        Vector2 acceleration;       ///< Current acceleration.
         uint32_t type;              ///< Particle type (zero-indexed).
-        uint32_t padding;           ///< Padding to reach 32 bytes (compute shader).
+        uint32_t padding;           ///< Padding to reach 24 bytes (compute shader).
     };
 
     /**
@@ -39,15 +37,6 @@ namespace particle {
      * @param particle_types Current number of particle types.
      */
     void init(Particle& particle, int particle_types);
-
-    /**
-     * @brief Update all particles in the simulation.
-     * @param particles Collection of particles.
-     * @param matrix Attraction matrix.
-     * @param particle_types Current number of particle types.
-     * @param ctx Interaction context.
-     */
-    void update(std::vector<Particle>& particles, const std::vector<float>& matrix, int particle_types, float dt, physics::InteractionCtx& ctx);
 
     /**
      * @brief Draw particle.

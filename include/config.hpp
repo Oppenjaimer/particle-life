@@ -14,8 +14,8 @@ namespace config {
     constexpr int screen_height = 720;                  ///< Initial screen height (px).
 
     // World
-    constexpr int world_width = 3000;                   ///< Width of the simulation world (px).
-    constexpr int world_height = 3000;                  ///< Height of the simulation world (px).
+    constexpr int world_width = 5000;                   ///< Width of the simulation world (px).
+    constexpr int world_height = 5000;                  ///< Height of the simulation world (px).
     constexpr bool world_boundary = false;              ///< Whether to outline the world boundary.
 
     // Settings panel
@@ -38,7 +38,7 @@ namespace config {
     constexpr float zoom_max = 10.0f;                   ///< Maximum camera zoom level.
 
     // Particles
-    constexpr int particle_count = 700;                 ///< Initial number of particles.
+    constexpr int particle_count = 5000;                ///< Initial number of particles.
     constexpr int particle_count_min = 0;               ///< Minium number of particles.
     constexpr int particle_count_max = 100000;          ///< Maximum number of particles.
     constexpr int particle_types = 2;                   ///< Initial number of distinct particle types.
@@ -49,9 +49,9 @@ namespace config {
     // Interaction
     constexpr float r_min = 30.0f;                      ///< Minimum interaction distance between particles (px).
     constexpr float r_max = 200.0f;                     ///< Maximum interaction distance between particles (px).
-    constexpr float friction = 0.2f;                    ///< Velocity damping factor.
-    constexpr float force_factor = 1000.0f;             ///< Interaction force multiplier.
-    constexpr float force_factor_max = 10000.0f;        ///< Interaction force multiplier.
+    constexpr float friction = 0.3f;                    ///< Velocity damping factor.
+    constexpr float force_factor = 200.0f;              ///< Interaction force multiplier.
+    constexpr float force_factor_max = 3000.0f;         ///< Interaction force multiplier.
 
     // Shaders
     constexpr int compute_groups = 256;                 ///< Number of workgroups in the compute shader.

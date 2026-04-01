@@ -6,7 +6,6 @@ layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 struct Particle {
     vec2 position;
     vec2 previous_position;
-    vec2 acceleration;
     uint type;
     uint padding;
 };
@@ -80,7 +79,6 @@ void main() {
 
     p.previous_position = p.position;
     p.position += velocity + acceleration;
-    p.acceleration = vec2(0.0);
 
     // Apply boundary condition
     if (boundary_type == 0) {

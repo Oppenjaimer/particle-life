@@ -20,7 +20,6 @@ int main() {
 
 /*
  TODO:
- - Implement space partitioning and/or GPU rendering
  - Implement saving and loading settings (seeds)
  - Add brush to create custom particle distributions
  - Add multiple themes

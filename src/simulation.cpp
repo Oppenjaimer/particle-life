@@ -179,18 +179,18 @@ static void update(State& state) {
     rlSetUniform(dt_loc, &dt, RL_SHADER_UNIFORM_FLOAT, 1);
 
     int r_min_loc = rlGetLocationUniform(state.compute_program, "r_min");
-    rlSetUniform(r_min_loc, &state.interaction_ctx.r_min, RL_SHADER_UNIFORM_FLOAT, 1);
+    rlSetUniform(r_min_loc, &state.r_min, RL_SHADER_UNIFORM_FLOAT, 1);
 
     int r_max_loc = rlGetLocationUniform(state.compute_program, "r_max");
-    rlSetUniform(r_max_loc, &state.interaction_ctx.r_max, RL_SHADER_UNIFORM_FLOAT, 1);
+    rlSetUniform(r_max_loc, &state.r_max, RL_SHADER_UNIFORM_FLOAT, 1);
 
     int friction_loc = rlGetLocationUniform(state.compute_program, "friction");
-    rlSetUniform(friction_loc, &state.interaction_ctx.friction, RL_SHADER_UNIFORM_FLOAT, 1);
+    rlSetUniform(friction_loc, &state.friction, RL_SHADER_UNIFORM_FLOAT, 1);
 
     int force_factor_loc = rlGetLocationUniform(state.compute_program, "force_factor");
-    rlSetUniform(force_factor_loc, &state.interaction_ctx.force_factor, RL_SHADER_UNIFORM_FLOAT, 1);
+    rlSetUniform(force_factor_loc, &state.force_factor, RL_SHADER_UNIFORM_FLOAT, 1);
 
-    int boundary = static_cast<int>(state.interaction_ctx.boundary_type);
+    int boundary = static_cast<int>(state.boundary_type);
     int boundary_type_loc = rlGetLocationUniform(state.compute_program, "boundary_type");
     rlSetUniform(boundary_type_loc, &boundary, RL_SHADER_UNIFORM_INT, 1);
 
@@ -262,9 +262,9 @@ static void gui(State& state) {
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Boundary type     "); ImGui::SameLine();
     const char* boundary_names[] = {"Bounce", "Periodic", "Open"};
-    int boundary_type = state.interaction_ctx.boundary_type;
+    int boundary_type = state.boundary_type;
     if (ImGui::Combo("##boundary_type", &boundary_type, boundary_names, IM_ARRAYSIZE(boundary_names)))
-        state.interaction_ctx.boundary_type = static_cast<physics::BoundaryType>(boundary_type);
+        state.boundary_type = static_cast<BoundaryType>(boundary_type);
 
     ImGui::SeparatorText("Controls");
 
@@ -283,7 +283,6 @@ static void gui(State& state) {
         toggle_pause(state);
 
     // Center camera button
-    // ImGui::SameLine();
     if (ImGui::Button("Center camera [C]"))
         center_camera(state.camera);
 
@@ -309,24 +308,24 @@ static void gui(State& state) {
     // Minimum distance
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Minimum distance  "); ImGui::SameLine();
-    if (ImGui::InputFloat("##r_min", &state.interaction_ctx.r_min, config::input_float_step, config::input_float_step_fast))
-        state.interaction_ctx.r_min = std::max(0.0f, state.interaction_ctx.r_min);
+    if (ImGui::InputFloat("##r_min", &state.r_min, config::input_float_step, config::input_float_step_fast))
+        state.r_min = std::max(0.0f, state.r_min);
 
     // Maximum distance
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Maximum distance  "); ImGui::SameLine();
-    if (ImGui::InputFloat("##r_max", &state.interaction_ctx.r_max, config::input_float_step, config::input_float_step_fast))
-        state.interaction_ctx.r_max = std::max(0.0f, state.interaction_ctx.r_max);
+    if (ImGui::InputFloat("##r_max", &state.r_max, config::input_float_step, config::input_float_step_fast))
+        state.r_max = std::max(0.0f, state.r_max);
 
     // Friction
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Friction          "); ImGui::SameLine();
-    ImGui::SliderFloat("##friction", &state.interaction_ctx.friction, 0.0f, 1.0f);
+    ImGui::SliderFloat("##friction", &state.friction, 0.0f, 1.0f);
 
     // Force factor
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Force factor      "); ImGui::SameLine();
-    ImGui::SliderFloat("##force_factor", &state.interaction_ctx.force_factor, 0.0f, config::force_factor_max);
+    ImGui::SliderFloat("##force_factor", &state.force_factor, 0.0f, config::force_factor_max);
 
     ImGui::SeparatorText("Attraction Matrix");
 

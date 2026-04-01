@@ -4,7 +4,6 @@
 
 #include "config.hpp"
 #include "particle.hpp"
-#include "physics.hpp"
 
 #include <vector>
 
@@ -12,6 +11,15 @@
  * @brief Global simulation logic and state management.
  */
 namespace sim {
+    /**
+     * @brief Type of world boundary.
+     */
+    enum BoundaryType {
+        Bounce,     ///< Hard wall boundary condition, particles bounce off.
+        Periodic,   ///< Periodic boundary condition, particles wrap around.
+        Open,       ///< No boundary condition, particles fly off.
+    };
+
     /**
      * @brief Simulation runtime state.
      */
@@ -28,10 +36,16 @@ namespace sim {
         int particle_types = config::particle_types;        ///< Current number of particle types.
         int active_particle_types = config::particle_types; ///< Active number of particle types before reset.
 
+        float r_min = config::r_min;                        ///< Initial minimum interaction distance between particles (px).
+        float r_max = config::r_max;                        ///< Initial maximum interaction distance between particles (px).
+        float friction = config::friction;                  ///< Velocity damping factor.
+        float force_factor = config::force_factor;          ///< Force multiplier.
+
+        BoundaryType boundary_type = Bounce;                ///< Type of world boundary.
+
         Camera2D camera;                                    ///< Simulation 2D camera.
         std::vector<particle::Particle> particles;          ///< Vector of particles.
         std::vector<float> matrix;                          ///< Attraction matrix.
-        physics::InteractionCtx interaction_ctx;            ///< Interaction context.
 
         unsigned int compute_program;                       ///< Compute shader program.
         unsigned int ssbo_particles;                        ///< Particles SSBO.
