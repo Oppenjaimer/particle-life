@@ -50,6 +50,9 @@ namespace sim {
         unsigned int compute_program;                       ///< Compute shader program.
         unsigned int ssbo_particles;                        ///< Particles SSBO.
         unsigned int ssbo_matrix;                           ///< Attraction matrix SSBO.
+
+        Shader render_shader;                               ///< Shader to render particles.
+        Mesh mesh;                                          ///< Particle mesh.
     };
 
     /**

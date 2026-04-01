@@ -154,7 +154,6 @@ static void input(State& state) {
 static void update(State& state) {
     if (state.is_paused) return;
 
-    rlUpdateShaderBuffer(state.ssbo_matrix, state.matrix.data(), state.matrix.size() * sizeof(float), 0);
     rlEnableShader(state.compute_program);
 
     // Bind SSBOs to layout locations
@@ -199,7 +198,6 @@ static void update(State& state) {
     rlComputeShaderDispatch(num_groups, 1, 1);
 
     rlDisableShader();
-    rlReadShaderBuffer(state.ssbo_particles, state.particles.data(), state.particles.size() * sizeof(particle::Particle), 0);
 }
 
 /**
@@ -211,18 +209,26 @@ static void draw(const State& state) {
     if (state.world_boundary)
         DrawRectangleLines(0, 0, config::world_width, config::world_height, theme::bg4);
 
-    Vector2 screen_start = GetScreenToWorld2D({0, 0}, state.camera);
-    Vector2 screen_end = GetScreenToWorld2D({(float)GetScreenWidth(), (float)GetScreenHeight()}, state.camera);
+    BeginShaderMode(state.render_shader);
 
-    // Draw visible particles
-    for (const auto& particle : state.particles) {
-        if (
-            particle.position.x >= screen_start.x &&
-            particle.position.y >= screen_start.y &&
-            particle.position.x <= screen_end.x &&
-            particle.position.y <= screen_end.y
-        ) particle::draw(particle);
-    }
+    // Set up camera perspective matrix
+    Matrix mvp = MatrixMultiply(rlGetMatrixModelview(), rlGetMatrixProjection());
+    int mvp_loc = GetShaderLocation(state.render_shader, "mvp");
+    SetShaderValueMatrix(state.render_shader, mvp_loc, mvp);
+
+    rlBindShaderBuffer(state.ssbo_particles, 0);
+
+    // Update radius uniform
+    int radius_loc = GetShaderLocation(state.render_shader, "particle_radius");
+    float radius = config::particle_radius;
+    SetShaderValue(state.render_shader, radius_loc, &radius, SHADER_UNIFORM_FLOAT);
+
+    // Instanced draw
+    rlEnableVertexArray(state.mesh.vaoId);
+    rlDrawVertexArrayElementsInstanced(0, state.mesh.triangleCount * 3, NULL, state.particle_count);
+    rlDisableVertexArray();
+
+    EndShaderMode();
 }
 
 /**
@@ -387,6 +393,56 @@ static void gui(State& state) {
     ImGui::End();
 }
 
+/**
+ * @brief Create a quad facing the camera.
+ * @returns Quad mesh.
+ */
+static Mesh create_mesh() {
+    Mesh mesh = {};
+    mesh.vertexCount = 4;
+    mesh.triangleCount = 2;
+
+    mesh.vertices = (float*)MemAlloc(mesh.vertexCount * 3 * sizeof(float));
+    mesh.texcoords = (float*)MemAlloc(mesh.vertexCount * 2 * sizeof(float));
+    mesh.indices = (unsigned short*)MemAlloc(mesh.triangleCount * 3 * sizeof(unsigned short));
+
+    // Top-left
+    mesh.vertices[0] = -0.5f;
+    mesh.vertices[1] = -0.5f;
+    mesh.vertices[2] = 0.0f;
+    mesh.texcoords[0] = 0.0f;
+    mesh.texcoords[1] = 0.0f;
+    // Bottom-left
+    mesh.vertices[3] = -0.5f;
+    mesh.vertices[4] = 0.5f;
+    mesh.vertices[5] = 0.0f;
+    mesh.texcoords[2] = 0.0f;
+    mesh.texcoords[3] = 1.0f;
+    // Bottom-right
+    mesh.vertices[6] = 0.5f;
+    mesh.vertices[7] = 0.5f;
+    mesh.vertices[8] = 0.0f;
+    mesh.texcoords[4] = 1.0f;
+    mesh.texcoords[5] = 1.0f;
+    // Top-right
+    mesh.vertices[9] = 0.5f;
+    mesh.vertices[10] = -0.5f;
+    mesh.vertices[11] = 0.0f;
+    mesh.texcoords[6] = 1.0f;
+    mesh.texcoords[7] = 0.0f;
+
+    // Indices
+    mesh.indices[0] = 0;
+    mesh.indices[1] = 1;
+    mesh.indices[2] = 2;
+    mesh.indices[3] = 0;
+    mesh.indices[4] = 2;
+    mesh.indices[5] = 3;
+
+    UploadMesh(&mesh, false);
+    return mesh;
+}
+
 void sim::init(State& state) {
     // Initialize raylib
     SetTraceLogLevel(LOG_WARNING);
@@ -416,6 +472,19 @@ void sim::init(State& state) {
     unsigned int compute_shader = rlLoadShader(compute_code, RL_COMPUTE_SHADER);
     state.compute_program = rlLoadShaderProgramCompute(compute_shader);
     UnloadFileText(compute_code);
+
+    // Create mesh and render shader
+    state.mesh = create_mesh();
+    state.render_shader = LoadShader("particle_draw.vs", "particle_draw.fs");
+
+    // Upload colors arrray to GPU
+    int colors_loc = GetShaderLocation(state.render_shader, "colors");
+    Vector4 color_data[config::particle_types_max];
+    for (int i = 0; i < config::particle_types_max; i++) {
+        Color c = particle::colors[i];
+        color_data[i] = {c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, c.a / 255.0f};
+    }
+    SetShaderValueV(state.render_shader, colors_loc, color_data, SHADER_UNIFORM_VEC4, config::particle_types_max);
 
     // Initialize camera and state
     center_camera(state.camera);
@@ -485,6 +554,8 @@ void sim::run(State& state) {
 }
 
 void sim::cleanup(State& state) {
+    UnloadShader(state.render_shader);
+    UnloadMesh(state.mesh);
     rlUnloadShaderProgram(state.compute_program);
     rlUnloadShaderBuffer(state.ssbo_particles);
     rlUnloadShaderBuffer(state.ssbo_matrix);

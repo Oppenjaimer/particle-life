@@ -39,12 +39,6 @@ namespace particle {
     void init(Particle& particle, int particle_types);
 
     /**
-     * @brief Draw particle.
-     * @param particle Particle to draw.
-     */
-    void draw(const Particle& particle);
-
-    /**
      * @brief Get color corresponding to particle type.
      * @param type Particle type.
      * @returns Associated color.

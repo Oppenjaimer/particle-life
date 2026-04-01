@@ -13,10 +13,6 @@ void particle::init(Particle& particle, int particle_types) {
     particle.previous_position = particle.position;
 }
 
-void particle::draw(const Particle& particle) {
-    DrawCircleV(particle.position, config::particle_radius, get_color(particle.type));
-}
-
 Color particle::get_color(uint8_t type) {
     return colors[type];
 }
