@@ -13,5 +13,5 @@ A Raylib implementation of Particle Life in C++. The codebase is written in a mi
 - [x] **Infinite** 2D scene with **panning** and **zooming**.
 - [x] **Keyboard shortcuts** for controlling the simulation (**quit**, **reset**, **pause**).
 - [x] Collapsible **settings panel** which can be moved around.
-- [ ] **GPU rendering** for better performance.
+- [x] **GPU rendering** for better performance.
 - [x] Default **Gruvbox Dark** theme.
